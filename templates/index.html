@@ -35,7 +35,7 @@
 
         document.addEventListener('click', function(event) {
           //var image = document.getElementById("wall").src = "static/wall_2.png"
-          response = fetch("/", {
+          fetch("/", {
             method: "POST",
             body: JSON.stringify({
               x: event.clientX,
@@ -44,11 +44,13 @@
             headers: {
               "Content-type": "application/json; charset=UTF-8"
             }
-          });
-          //var image = document.getElementById("wall").src = "static/wall.png"
-          setTimeout(function(){
-            location.reload();
-          }, 200);
+          // This needs to be improved, but works for now
+          // Waits for 200 ms after sending POST before reloading page
+          // Might want to consider a different aproach in the future
+          }).then(
+            setTimeout(function(){
+              location.reload();
+          }, 200));
 
         });
         </script>
