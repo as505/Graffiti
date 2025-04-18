@@ -43,26 +43,41 @@ def hello_world():
 
 
     if request.method == 'POST':
-        current_time = datetime.datetime.now()
-
-        assert client_token != None
-        query = f"SELECT id from idTable WHERE token Is '{client_token}'"
-        query = "SELECT * from idTable"
-        db_result = db_connection.execute(query)
-        print(db_result.fetchall())
-
         # By default we assume user has not waited long enough to draw again
         client_cooldown = 0
 
-            
-        # Allow client to draw if user cooldown is high enough
-        if client_cooldown > USER_COOLDOWN_THRESHOLD:
-            data = request.get_json()
-            x = data["x"]
-            y = data["y"]
+        # Fetch client ID
+        assert client_token != None
+        query = f"SELECT id from idTable WHERE token Is '{client_token}'"
+        client_id = db_connection.execute(query).fetchone()
+        client_id = int(client_id[0])
 
-            draw(x, y)
+        # Check timestamp of last action, if any
+        query = f"SELECT last_action_ts FROM users WHERE id IS {client_id}"
+        last_action = db_connection.execute(query).fetchone()[0]
         
+        # Allow user to draw if no actions are registered
+        if last_action == None:
+            client_cooldown = USER_COOLDOWN_THRESHOLD
+        else:
+            print(last_action)
+        
+        # Abort draw request if user has not waited long enough
+        if client_cooldown < USER_COOLDOWN_THRESHOLD:
+            return response
+        
+        # Get drawing coordinates from client
+        data = request.get_json()
+        x = data["x"]
+        y = data["y"]
+        current_time = datetime.datetime.now()
+
+        # Perform draw
+        draw(x, y)
+        # Store client timestamp in database
+        query = f"INSERT INTO users (id, last_action_ts) VALUES ({client_id}, '{current_time}')"
+        db_connection.execute(query)
+        db_connection.commit()
 
     return response
 
