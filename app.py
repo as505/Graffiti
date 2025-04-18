@@ -18,7 +18,7 @@ db.init_app(app)
 #db_connection = sqlite3.connect('database.db')
 
 # Number of secconds until client can draw again
-USER_COOLDOWN_THRESHOLD = 1
+USER_COOLDOWN_THRESHOLD = datetime.timedelta(seconds=2)
 
 @app.route('/', methods = ['GET', 'POST'])
 def hello_world():
@@ -45,6 +45,7 @@ def hello_world():
     if request.method == 'POST':
         # By default we assume user has not waited long enough to draw again
         client_cooldown = 0
+        current_time = datetime.datetime.now()
 
         # Fetch client ID
         assert client_token != None
@@ -60,22 +61,21 @@ def hello_world():
         if last_action == None:
             client_cooldown = USER_COOLDOWN_THRESHOLD
         else:
-            print(last_action)
+            last_action = datetime.datetime.strptime(last_action, "%Y-%m-%d %H:%M:%S.%f")
+            client_cooldown = (current_time - last_action)
         
         # Abort draw request if user has not waited long enough
         if client_cooldown < USER_COOLDOWN_THRESHOLD:
             return response
-        
+
         # Get drawing coordinates from client
         data = request.get_json()
         x = data["x"]
         y = data["y"]
-        current_time = datetime.datetime.now()
-
         # Perform draw
         draw(x, y)
         # Store client timestamp in database
-        query = f"INSERT INTO users (id, last_action_ts) VALUES ({client_id}, '{current_time}')"
+        query = f"UPDATE users SET last_action_ts=('{current_time}') WHERE id is {client_id}"
         db_connection.execute(query)
         db_connection.commit()
 
