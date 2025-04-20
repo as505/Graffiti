@@ -2,6 +2,7 @@ import sqlite3
 from flask import current_app, g
 from datetime import datetime
 import click
+from pathlib import Path
 
 DATABASE = 'database.db'
 
@@ -20,6 +21,9 @@ def close_database(e=None):
 
 
 def init_database():
+    # reset database
+    open(DATABASE, 'w').close()
+
     db = get_database()
 
     with current_app.open_resource('schema.sql') as file:

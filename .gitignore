@@ -1,5 +1,8 @@
-# No need to track this
+# Generated files
 static/wall.png
+database.db
+# Not currently in use, could contain sensitive data in the future
+settings.cfg
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
