@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, session, make_response
-from PIL import Image
+from PIL import Image, ImageColor
 import json
 import datetime
 import db
@@ -9,9 +9,21 @@ import uuid
 
 app = Flask(__name__)
 
+SCREEN_RESOLUTION = (1920, 1080)
+CANVAS_RESOLUTION = (16, 7)
+
 # Create blank canvas
-image = Image.new("RGB", [1920, 1080], (155, 155, 155))
+image = Image.new("RGB", CANVAS_RESOLUTION, (155, 155, 155))
 image.save('static\\wall.png', "PNG")
+
+# Convert cursor position to canvas pixel
+def screen_to_canvas_coords(x, y):
+    ratio = SCREEN_RESOLUTION[0] / CANVAS_RESOLUTION[0]
+
+    x2 = int(x/ratio)
+    y2 = int(y/ratio)
+    
+    return (x2, y2)
 
 db.init_app(app)
 
@@ -73,8 +85,13 @@ def hello_world():
         data = request.get_json()
         x = data["x"]
         y = data["y"]
+        color = data["color"]
+        # Convert from hex to rgb tuple
+        color = ImageColor.getcolor(color, "RGB")
+
+        x, y = screen_to_canvas_coords(x=x, y=y)
         # Perform draw
-        draw(x, y)
+        draw(x, y, color)
         # Store client timestamp in database
         query = f"UPDATE users SET last_action_ts=('{current_time}') WHERE id is {client_id}"
         db_connection.execute(query)
@@ -83,10 +100,11 @@ def hello_world():
     return response
 
 # Change a pixel on the canvas at a specified coordinate
-def draw(x, y):
+def draw(x, y, color):
     with Image.open('static\\wall.png') as image:
-        image.putpixel((x, y), (255, 255, 255))
+        image.putpixel((x, y), color)
         image.save('static\\wall.png', "PNG")
+
     return True
 
 # Not sure if this does anything

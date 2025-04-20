@@ -16,14 +16,24 @@
           bottom: 10px;
           right: 10px;
       }
+      #pixel_color{
+          position: fixed;
+          bottom: 10px;
+          left: 10px;
+      }
     </style>
     <link rel="stylesheet" href="style.css">
   </head>
   
   <body>
+    <div>
+      <input type="color" id="pixel_color" name="Color" value="#ffffff"/>
+    </div>
+
     <div id="coordinates">Mouse X: 0, Mouse Y: 0</div>
-    <img id="wall" src="static/wall.png" border="0">
-    </img>
+    
+    <img id="wall" src="static/wall.png" border="0", style="width: 100vw; image-rendering: pixelated;"></img>
+    
     <script>
         const coordinatesDiv = document.getElementById('coordinates');
 
@@ -34,12 +44,13 @@
         });
 
         document.addEventListener('click', function(event) {
-          //var image = document.getElementById("wall").src = "static/wall_2.png"
+          pixelcolor = document.getElementById('pixel_color').value
           fetch("/", {
             method: "POST",
             body: JSON.stringify({
               x: event.clientX,
               y: event.clientY,
+              color: pixelcolor
             }),
             headers: {
               "Content-type": "application/json; charset=UTF-8"
