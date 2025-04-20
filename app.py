@@ -24,13 +24,11 @@ USER_COOLDOWN_THRESHOLD = datetime.timedelta(seconds=2)
 def hello_world():
     response = make_response(render_template('index.html'))
     db_connection = sqlite3.connect('database.db')
-    # This authentication is entirely client sided, and can be easily fooled by deleting/editing cookies.
-    # Add DB for sever-side auth later
 
     # Get client ID
     client_token = request.cookies.get('client_token')
     # Make new client if no id is present
-    if client_token == None:
+    if client_token is None:
         # Create randomized token for user id
         client_token = str(uuid.uuid4())
 
@@ -48,19 +46,22 @@ def hello_world():
         current_time = datetime.datetime.now()
 
         # Fetch client ID
-        assert client_token != None
+        assert client_token is not None
         query = f"SELECT id from idTable WHERE token Is '{client_token}'"
+        assert query is not None
+
         client_id = db_connection.execute(query).fetchone()
         client_id = int(client_id[0])
 
         # Check timestamp of last action, if any
         query = f"SELECT last_action_ts FROM users WHERE id IS {client_id}"
-        last_action = db_connection.execute(query).fetchone()[0]
+        last_action = db_connection.execute(query).fetchone()
         
         # Allow user to draw if no actions are registered
-        if last_action == None:
+        if last_action is None:
             client_cooldown = USER_COOLDOWN_THRESHOLD
         else:
+            last_action = last_action[0]
             last_action = datetime.datetime.strptime(last_action, "%Y-%m-%d %H:%M:%S.%f")
             client_cooldown = (current_time - last_action)
         
