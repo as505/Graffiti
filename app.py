@@ -5,6 +5,7 @@ import datetime
 import db
 import sqlite3
 import uuid
+import pathlib
 
 
 app = Flask(__name__)
@@ -12,9 +13,10 @@ app = Flask(__name__)
 SCREEN_RESOLUTION = (1920, 1080)
 CANVAS_RESOLUTION = (16, 7)
 
+IMAGE_URL = pathlib.Path("static/wall.png")
 # Create blank canvas
 image = Image.new("RGB", CANVAS_RESOLUTION, (155, 155, 155))
-image.save('static\\wall.png', "PNG")
+image.save(IMAGE_URL, "PNG")
 
 # Convert cursor position to canvas pixel
 def screen_to_canvas_coords(x, y):
@@ -101,9 +103,9 @@ def hello_world():
 
 # Change a pixel on the canvas at a specified coordinate
 def draw(x, y, color):
-    with Image.open('static\\wall.png') as image:
+    with Image.open(IMAGE_URL) as image:
         image.putpixel((x, y), color)
-        image.save('static\\wall.png', "PNG")
+        image.save(IMAGE_URL, "PNG")
 
     return True
 
