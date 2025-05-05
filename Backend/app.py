@@ -29,8 +29,6 @@ def screen_to_canvas_coords(x, y):
 
 db.init_app(app)
 
-#db_connection = sqlite3.connect('database.db')
-
 # Number of secconds until client can draw again
 USER_COOLDOWN_THRESHOLD = datetime.timedelta(seconds=2)
 
@@ -108,12 +106,6 @@ def draw(x, y, color):
         image.save(IMAGE_URL, "PNG")
 
     return True
-
-# Not sure if this does anything
-@app.after_request
-def add_header(response):
-    response.cache_control.max_age = 1
-    return response
 
 
 if __name__ == '__main__':
