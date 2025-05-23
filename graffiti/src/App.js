@@ -1,10 +1,10 @@
 import logo from './logo.svg';
 import './App.css';
 
-
 var canvas_width = 200
 var canvas_height = 100
 
+let host_url = "http://127.0.0.1:5000"
 
 function App() {
   return (
@@ -24,8 +24,7 @@ function App() {
         </a>
         <canvas id="canvas" width={canvas_width} height={canvas_height}></canvas>
         <div className="cube">
-          <p>
-            test ing text
+          <p id="resolution_text">
           </p>
         </div>
       </header>
@@ -35,11 +34,34 @@ function App() {
 
 
 hello_world()
-draw_rect(0, 0, canvas_width, canvas_height)
+get_canvas()
+//draw_rect(0, 0, canvas_width, canvas_height)
 
 function hello_world(){
   console.log("Hello world react!");
 }
+
+// Get canvas information from backend
+async function get_canvas(){
+
+  let paragraph = document.getElementById("resolution_text");
+  
+
+  console.log("Fetching canvas");
+  const resolution_response = await fetch("/get_canvas_resolution", {
+    method: "GET"
+  })
+    .then((response) => response.json())
+    .then((response) => {
+      let string = "X: " + response.x + "\nY: " + response.y;
+      const text = document.createTextNode(string);
+      paragraph.appendChild(text);
+      //console.log(response.x);
+      //console.log(response.value.x);
+    })
+}
+
+
 
 function draw_rect(x, y, w, h){
   const canvas = document.getElementById("canvas");

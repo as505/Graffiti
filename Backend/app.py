@@ -7,6 +7,8 @@ import sqlite3
 import uuid
 import pathlib
 
+#urls for API
+get_canvas_resolution_url = "/get_canvas_resolution"
 
 app = Flask(__name__)
 
@@ -31,6 +33,23 @@ db.init_app(app)
 
 # Number of secconds until client can draw again
 USER_COOLDOWN_THRESHOLD = datetime.timedelta(seconds=2)
+
+# Get canvas pixel data from backend
+@app.route(get_canvas_resolution_url, methods = ['GET'])
+def send_pixel_data():
+    response = make_response()
+    
+    response.data = json.dumps({
+        "x" : CANVAS_RESOLUTION[0],
+        "y" : CANVAS_RESOLUTION[1]
+    })
+    print(response)
+
+    return response
+
+
+
+
 
 @app.route('/', methods = ['GET', 'POST'])
 def hello_world():
