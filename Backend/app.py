@@ -7,18 +7,47 @@ import sqlite3
 import uuid
 import pathlib
 
+
+
 #urls for API
 get_canvas_resolution_url = "/get_canvas_resolution"
+get_canvas_pixels_url = "/get_canvas_pixels"
 
 app = Flask(__name__)
 
 SCREEN_RESOLUTION = (1920, 1080)
 CANVAS_RESOLUTION = (16, 7)
+# Default canvas color
+CANVAS_COLOR = "#ded9c8"
+PIXELS = []
 
+CANVAS_URL = pathlib.Path("static/pixels.csv")
 IMAGE_URL = pathlib.Path("static/wall.png")
 # Create blank canvas
 image = Image.new("RGB", CANVAS_RESOLUTION, (155, 155, 155))
 image.save(IMAGE_URL, "PNG")
+
+
+# Init canvas
+def init_canvas(x, y):
+    # create file
+    open(CANVAS_URL, "w").close()
+    # Init canvas
+    with open(CANVAS_URL, "a") as f:
+        i = 0
+        j = 0
+
+        while j < y:
+            i = 0
+            while i < x:
+                f.write(CANVAS_COLOR + ", ")
+                PIXELS.append(CANVAS_COLOR)
+                i += 1
+            j += 1
+
+    f.close()
+
+init_canvas(CANVAS_RESOLUTION[0], CANVAS_RESOLUTION[1])
 
 # Convert cursor position to canvas pixel
 def screen_to_canvas_coords(x, y):
@@ -47,8 +76,11 @@ def send_pixel_data():
 
     return response
 
-
-
+@app.route(get_canvas_pixels_url, methods = ['GET'])
+def send_pixels():
+    response = make_response()
+    response.data = json.dumps(PIXELS)
+    return response
 
 
 @app.route('/', methods = ['GET', 'POST'])
@@ -125,6 +157,9 @@ def draw(x, y, color):
         image.save(IMAGE_URL, "PNG")
 
     return True
+
+
+
 
 
 if __name__ == '__main__':

@@ -4,8 +4,6 @@ import './App.css';
 var canvas_width = 200
 var canvas_height = 100
 
-let host_url = "http://127.0.0.1:5000"
-
 function App() {
   return (
     <div className="App">
@@ -33,34 +31,38 @@ function App() {
 }
 
 
-hello_world()
-get_canvas()
+
+get_canvas_resolution()
+get_canvas_pixels()
 //draw_rect(0, 0, canvas_width, canvas_height)
 
-function hello_world(){
-  console.log("Hello world react!");
-}
-
 // Get canvas information from backend
-async function get_canvas(){
-
-  let paragraph = document.getElementById("resolution_text");
-  
-
-  console.log("Fetching canvas");
-  const resolution_response = await fetch("/get_canvas_resolution", {
+async function get_canvas_resolution(){
+  await fetch("/get_canvas_resolution", {
     method: "GET"
   })
     .then((response) => response.json())
     .then((response) => {
+      let paragraph = document.getElementById("resolution_text");
       let string = "X: " + response.x + "\nY: " + response.y;
       const text = document.createTextNode(string);
       paragraph.appendChild(text);
-      //console.log(response.x);
-      //console.log(response.value.x);
     })
 }
 
+// Fetch pixels from backend, then call draw to render
+async function get_canvas_pixels(params) {
+  const response = await fetch("get_canvas_pixels", {
+    method: "GET"
+  })
+    .then((response) => response.json())
+    .then((response) => draw_canvas(response))
+}
+
+// Render canvas for client
+function draw_canvas(pixels){
+  console.log(pixels)
+}
 
 
 function draw_rect(x, y, w, h){

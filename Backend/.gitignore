@@ -1,5 +1,6 @@
 # Generated files
 static/wall.png
+static/pixels.csv
 database.db
 # Not currently in use, could contain sensitive data in the future
 settings.cfg
