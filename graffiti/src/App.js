@@ -1,26 +1,14 @@
 import logo from './logo.svg';
 import './App.css';
 
-var canvas_width = 200
-var canvas_height = 100
+var pixels_x = 0;
+var pixels_y = 0;
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <canvas id="canvas" width={canvas_width} height={canvas_height}></canvas>
+        <canvas id="canvas" className="canvas"></canvas>
         <div className="cube">
           <p id="resolution_text">
           </p>
@@ -46,6 +34,8 @@ async function get_canvas_resolution(){
       let paragraph = document.getElementById("resolution_text");
       let string = "X: " + response.x + "\nY: " + response.y;
       const text = document.createTextNode(string);
+      pixels_x = response.x;
+      pixels_y = response.y;
       paragraph.appendChild(text);
     })
 }
@@ -61,7 +51,24 @@ async function get_canvas_pixels(params) {
 
 // Render canvas for client
 function draw_canvas(pixels){
-  console.log(pixels)
+  const canvas = document.getElementById("canvas");
+  let i = 0;
+  // Create row for all pixels on this y axis
+  const pixel_row = document.createElement("div")
+  pixel_row.setAttribute("id", "r "+0)
+  pixel_row.setAttribute("Class", "pixel_row");
+
+  canvas.appendChild(pixel_row)
+
+  while (i < pixels_x){
+    //console.log(pixels)
+    const pixel = document.createElement("div");
+    // ID is pixel coordinate
+    pixel.setAttribute("id", i+", 0");
+    pixel.setAttribute("Class", "pixel");
+    pixel_row.appendChild(pixel);
+    i += 1;
+  }
 }
 
 

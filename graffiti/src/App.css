@@ -28,6 +28,37 @@
   color: #61dafb;
 }
 
+
+#canvas {
+  background-color: whitesmoke;
+  min-width: 80vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.pixel_row {
+  background-color: black;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex: 0 0 100%;
+  flex-wrap: nowrap;
+  width:auto;
+  height:auto;
+}
+
+.pixel {
+  background-color: black;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: nowrap;
+  z-index: 1000;
+  min-width: 1vw;
+  border: 3px black;
+}
+
 @keyframes App-logo-spin {
   0%{
     transform: rotate(0deg);
